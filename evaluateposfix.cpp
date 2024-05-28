@@ -1,12 +1,18 @@
 #include <vector>
+#include <stack>
 #include <iostream>
 #include <algorithm>
 using namespace std;
 
-
 bool isOperator(char ch) {
     vector<char> op = {'+','-','*','/','%'};
     return find(op.begin(), op.end(), ch) != op.end();
+}
+
+int precedence(string op){
+    if(op == "+" || op == "-") return 1;
+    else if(op == "*" || op == "/" || op == "%") return 2;
+    else return 0;
 }
 
 vector<string> stringToInfix(string str) {
@@ -52,9 +58,43 @@ vector<string> stringToInfix(string str) {
     return infix;
 }
 
-void printInfix(const vector<string>& infix) {
-    for (size_t i = 0; i < infix.size(); ++i) {
-        cout << infix[i] << " ";
+vector<string> InfixToPostfix(vector<string> infix){
+    stack<string> operand;
+    vector<string> postfix;
+
+    for(auto itr = infix.begin(); itr != infix.end(); itr++){
+        string str = *itr;
+        if( isdigit(str[0]) || ( str[0] == '-' && str.size() > 1 && isdigit(str[1]) ) ){
+            postfix.push_back(str);
+        }else if(str == "("){
+            operand.push(str);
+        }else if(str == ")"){
+            while (!operand.empty() && operand.top() != "("){
+                postfix.push_back(operand.top());
+                operand.pop();
+            }
+            if(!operand.empty()){
+                operand.pop();
+            }
+
+        }else{
+            while(!operand.empty() && operand.top() != "(" && ( precedence(str) <= precedence(operand.top()))){
+                postfix.push_back(operand.top());
+                operand.pop();
+            }
+            operand.push(str);
+        }
+    }
+    while(!operand.empty() && ( operand.top() != "(" || operand.top() != ")" )){
+        postfix.push_back(operand.top());
+        operand.pop();
+    }
+    return postfix;
+}
+
+void printPostfix(vector<string> postfix) {
+    for (size_t i = 0; i < postfix.size(); ++i) {
+        cout << postfix[i] << " ";
     }
     cout << endl;
 }
@@ -64,8 +104,8 @@ int main() {
     getline(cin, str);
 
     vector<string> infix = stringToInfix(str);
-
-    printInfix(infix);
+    vector<string> postfix = InfixToPostfix(infix);
+    printPostfix(postfix);
 
     return 0;
 }
