@@ -15,6 +15,22 @@ int precedence(string op){
     else return 0;
 }
 
+double Operasi(double a,double b,string op){
+    double total=0;
+    if(op=="+"){
+        total=b+a;
+    }else if(op=="-"){
+        total=b-a;
+    }else if(op=="*"){
+        total=b*a;
+    }else if(op=="/"){
+        total=b/a;
+    }else if(op=="%"){
+        total=(int)b%(int)a;
+    }
+    return total;
+}
+
 vector<string> stringToInfix(string str) {
     vector<string> infix;
     string angka;
@@ -92,11 +108,26 @@ vector<string> InfixToPostfix(vector<string> infix){
     return postfix;
 }
 
-void printPostfix(vector<string> postfix) {
-    for (size_t i = 0; i < postfix.size(); ++i) {
-        cout << postfix[i] << " ";
+double EvaluatePostfix(vector<string> postfix){
+    stack<double> total;
+
+    double a,b,c;
+    string temp;
+    for(auto itr=postfix.begin();itr !=postfix.end();itr++){
+        string str=*itr;
+        if(isOperator(str[0])&&str.size()==1){
+            a=total.top();
+            total.pop();
+            b=total.top();
+            total.pop();
+            temp=str;
+            c=Operasi(a,b,temp);
+            total.push(c);
+        }else{
+            total.push(strod((str).c_str(),NULL));
+        }
     }
-    cout << endl;
+    return total.top();
 }
 
 int main() {
@@ -105,7 +136,7 @@ int main() {
 
     vector<string> infix = stringToInfix(str);
     vector<string> postfix = InfixToPostfix(infix);
-    printPostfix(postfix);
+    cout<<EvaluatePostfix(postfix)<<endl;
 
     return 0;
 }
