@@ -124,7 +124,7 @@ double EvaluatePostfix(vector<string> postfix){
             c=Operasi(a,b,temp);
             total.push(c);
         }else{
-            total.push(strod((str).c_str(),NULL));
+            total.push(stod(str));
         }
     }
     return total.top();
